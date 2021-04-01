@@ -1,0 +1,1 @@
+bucket_name_pattern = "gcp_iac_bucket"
