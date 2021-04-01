@@ -1,4 +1,4 @@
-variable "bucket_name" {
+variable "bucket_name_pattern" {
   type        = string
   description = "Name of the bucket"
 }
@@ -11,4 +11,8 @@ variable "region" {
 variable "project_id" {
   type    = string
   default = "data-lake-test-gcp-iac"
+}
+
+variable "ENVIRONMENT" {
+  type = string
 }
