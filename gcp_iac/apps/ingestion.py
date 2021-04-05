@@ -3,6 +3,7 @@ import shutil
 import os
 from threading import Thread
 from queue import Queue
+import subprocess
 
 from google.cloud import storage
 from tensorflow.keras.datasets.fashion_mnist import load_data
@@ -37,6 +38,7 @@ def ingest_initial_data(project_id : str, bucket_name : str):
         8: "bag",
         9: "ankle-boot"
     }
+
     temp_dir = tempfile.mkdtemp()
     temp_file_names = []
 
@@ -56,16 +58,10 @@ def ingest_initial_data(project_id : str, bucket_name : str):
             temp_file_names.append((temp_file_name, file_name))
 
     try:
-        upload_queue = Queue()
-        upload_bar = tqdm(total=len(temp_file_names))
-        storage_client = storage.Client(project_id)
 
-        Thread(target = upload_file, args=(upload_queue,upload_bar), daemon=True).start()
-
-        for ori_file_name, dest_file_name in temp_file_names:
-            upload_queue.put((storage_client, bucket_name, ori_file_name, dest_file_name))
-
-        upload_queue.join()
+        dst = f"gs://{gcp_iac_bucket_name}/"
+        process_str = f"gsutil -m rsync -r {temp_dir} {dst}"
+        subprocess.run(process_str, shell=True)
 
     finally:
         shutil.rmtree(temp_dir)

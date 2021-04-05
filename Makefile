@@ -7,3 +7,6 @@ run_terraform:
 
 install:
 	pip install -e .
+
+ingest_data:
+	python -m gcp_iac.apps.ingestion
